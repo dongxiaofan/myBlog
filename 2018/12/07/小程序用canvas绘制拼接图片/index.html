@@ -5,15 +5,19 @@
   
 
   
-  <title>Hexo</title>
+  <title>小程序用canvas绘制拼接图片 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="https://dongxiaofan.github.io/myBlog/index.html">
+  <meta name="description" content="因为小程序的一些限制，目前不支持整个直接分享到朋友圈，所以需要根据不同的用户id在后端生成二维码，拿到这个二维码图片后，把它跟设计好的海报拼接起来，保存到本地，这样就可以把保存好的这个张海报图片分享到朋友圈。接下来讲讲拼接图片的方法。 首先需要获取微信小程序手机相册相关授权因为保存海报需要将网络图片保存到本地相册，所以需要通过小程序相对应的授权：是否授权保存到相册。我这里保存海报有一个按钮，如果获">
+<meta property="og:type" content="article">
+<meta property="og:title" content="小程序用canvas绘制拼接图片">
+<meta property="og:url" content="https://dongxiaofan.github.io/myBlog/2018/12/07/小程序用canvas绘制拼接图片/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="因为小程序的一些限制，目前不支持整个直接分享到朋友圈，所以需要根据不同的用户id在后端生成二维码，拿到这个二维码图片后，把它跟设计好的海报拼接起来，保存到本地，这样就可以把保存好的这个张海报图片分享到朋友圈。接下来讲讲拼接图片的方法。 首先需要获取微信小程序手机相册相关授权因为保存海报需要将网络图片保存到本地相册，所以需要通过小程序相对应的授权：是否授权保存到相册。我这里保存海报有一个按钮，如果获">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-12-07T05:41:44.643Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
+<meta name="twitter:title" content="小程序用canvas绘制拼接图片">
+<meta name="twitter:description" content="因为小程序的一些限制，目前不支持整个直接分享到朋友圈，所以需要根据不同的用户id在后端生成二维码，拿到这个二维码图片后，把它跟设计好的海报拼接起来，保存到本地，这样就可以把保存好的这个张海报图片分享到朋友圈。接下来讲讲拼接图片的方法。 首先需要获取微信小程序手机相册相关授权因为保存海报需要将网络图片保存到本地相册，所以需要通过小程序相对应的授权：是否授权保存到相册。我这里保存海报有一个按钮，如果获">
   
     <link rel="alternate" href="/myBlog/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -60,46 +64,7 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-    <article id="post-小程序使用vant遇到的一些小坑" class="article article-type-post" itemscope="" itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/myBlog/2018/12/07/小程序使用vant遇到的一些小坑/" class="article-date">
-  <time datetime="2018-12-07T05:38:03.716Z" itemprop="datePublished">2018-12-07</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/myBlog/2018/12/07/小程序使用vant遇到的一些小坑/">小程序使用vant遇到的一些小坑</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>微信小程序自17年上线以来，已经有了越来越多的相关项目加入。很多小程序都是用的weui作为自己项目的基础样式库，但是weui的组件毕竟太有限了，随着小程序的组件库的慢慢发展，Vant Weapp进入了我们的视线。<br>Vant Weapp是一款轻量、可靠的小程序 UI 组件库，提供了很多比较灵活的组件，比如<strong>DatetimePicker 时间选择</strong>，<strong>Radio 单选框</strong>，<strong>Checkbox 复选框</strong>，<strong>Popup 弹出层</strong>等等，接下来会详细说说这几个常用的组件。<br>很多小程序项目都会有搜索栏，弹出框，并且交互都比较个性化，weui远远不够满足我们的需求，并且需要写很多额外的代码来达到理想的效果。<br>我们公司的小程序就是这样。进入小程序后的列表页，有地区选择，搜索框，点击搜索框有个弹窗，里面包含热门搜索及历史搜索。一开始做这个功能，是一个input，一个button组合起来的，input获取焦点时，显示一个弹窗，里面有热门搜索及历史搜索，这里面的每个小字段都绑定了一个方法，即点击当前字段的时候，把相应的值传到input里去。点击button搜索按钮的时候读取input里面的值，并调取后端相应接口进行查询，同时隐藏搜索弹窗。整个搜索条以及里面的弹窗，作为一个模块供不同的列表页调用。这样似乎不错，但是很快后面发现了一些问题：因为列表页不止有搜索这一个筛选功能，还有例如城市/类型等筛选，在点击其他组件筛选项的时候，需要显示或隐藏某个组件，或者子组件之间的交互，就非常麻烦。<br>考虑到项目后期的扩展性，于是决定引入vant进行辅助开发。最初的设想是，使用vant的search及popup，在popup里面加入van-radio-group单选框组，给search组件绑定相关popup的方法，只不过它不能作为一整个组件公用了，而是在每个需要它的页面都加上这些东西。popup里面的每个搜索关键词字段，作为一个radio，给van-radio-group绑定的value传值，这样不需要对每个字段都绑定方法，很好。在小程序开发者工具里面使用也都很正常流畅。但是！预览或者真机调试就出现问题了。进入页面后弹窗不听指挥还没有点击就全部显示，并且点击搜索或蒙层时弹窗根本没有隐藏。<br>到底是什么原因？又该如何解决？<br>试了几次之后发现，造成这种情况，是因为组件套用组件造成的。单个的组件可以正常使用，真机或开发版都没有问题，一旦组件套组件就不可以。两害相权取其轻，所以在这里，我依然使用vant的van-radio-group，只是弹窗和蒙层自己写了一个，也可以达到同样的效果。<br>而同一个页面中，地区的筛选用了同样的方法，即把所有地区字段作为单选，点击进行传值，已达到筛选的目的。关于地区选择，点击每个字段的单选框后，有确定和取消，这里用到了缓存。当选择了一个城市并确定查找这个城市的数据时，会把所选城市的相关信息放入缓存，所以这个缓存的内容，永远是点击了确定选择后的城市相关信息。当再次进行地区选择，并且取消选择时，那么城市应该还是上一次点击确定选择的那个，这时候就可以读取缓存里面存储的所选择的城市信息。<br>另外vant里面有一个很好用的东西，<strong>van-checkbox-group 复选框组</strong>，我们有些版块的选择是多选并且需要控制选择的数量，最开始需要自己去写这些代码，后来发现vant的CheckboxGroup API里有个字段是max，可以设置最大选择可选数，到了最大值就不能继续点击了，觉得非常nice，很省事~</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://dongxiaofan.github.io/myBlog/2018/12/07/小程序使用vant遇到的一些小坑/" data-id="cjpdls9jk0001g0u2qkmvqvzl" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-小程序用canvas绘制拼接图片" class="article article-type-post" itemscope="" itemprop="blogPost">
+        <section id="main"><article id="post-小程序用canvas绘制拼接图片" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/myBlog/2018/12/07/小程序用canvas绘制拼接图片/" class="article-date">
   <time datetime="2018-12-07T05:22:51.000Z" itemprop="datePublished">2018-12-07</time>
@@ -112,8 +77,8 @@
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/myBlog/2018/12/07/小程序用canvas绘制拼接图片/">小程序用canvas绘制拼接图片</a>
+    <h1 class="article-title" itemprop="name">
+      小程序用canvas绘制拼接图片
     </h1>
   
 
@@ -158,56 +123,28 @@
     </footer>
   </div>
   
-</article>
-
-
+    
+<nav id="article-nav">
   
-    <article id="post-hello-world" class="article article-type-post" itemscope="" itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/myBlog/2018/12/07/hello-world/" class="article-date">
-  <time datetime="2018-12-07T04:13:36.297Z" itemprop="datePublished">2018-12-07</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
+    <a href="/myBlog/2018/12/07/小程序使用vant遇到的一些小坑/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
         
+          小程序使用vant遇到的一些小坑
+        
+      </div>
+    </a>
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/myBlog/2018/12/07/hello-world/">Hello World</a>
-    </h1>
   
+    <a href="/myBlog/2018/12/07/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Hello World</div>
+    </a>
+  
+</nav>
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://dongxiaofan.github.io/myBlog/2018/12/07/hello-world/" data-id="cjpdls9jg0000g0u29m5lzpol" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
   
 </article>
-
-
-  
-
 
 </section>
         
